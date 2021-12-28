@@ -17,6 +17,10 @@ int meansOfDeath;
 
 edict_t		*g_edicts;
 
+maplist_t maplist[64];
+freeze_t freeze[5];
+int endMapIndex;
+
 cvar_t	*deathmatch;
 cvar_t	*coop;
 cvar_t	*dmflags;

@@ -2299,7 +2299,7 @@ static void loadMap()
 	FILE*	f;
 	char	st[128];
 
-	memset(maplist, 0, sizeof(maplist));
+	memset(maplist, 0, sizeof(maplist_t) * 64);
 	game = gi.cvar("game", "", 0);
 	if (!*game->string)
 		sprintf(name, "baseq2/freeze.ini");
@@ -2482,7 +2482,7 @@ void freezeSpawn()
 	loadMessage();
 	loadMap();
 
-	memset(freeze, 0, sizeof(freeze));
+	memset(freeze, 0, sizeof(freeze_t) * 5);
 	team_loop
 		freeze[i].update = true;
 	lame_hack &= ~everyone_ready;

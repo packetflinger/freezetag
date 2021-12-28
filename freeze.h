@@ -1,4 +1,4 @@
-struct {
+typedef struct {
 	int	score;
 	int	thawed;
 	float	win_time;
@@ -8,7 +8,9 @@ struct {
 	int	alive;
 	float	break_time;
 	qboolean	ready;
-} freeze[5];
+} freeze_t;
+
+extern freeze_t freeze[];
 
 typedef struct hnode {
 	struct pnode*	entries;
@@ -23,18 +25,20 @@ typedef struct pnode {
 	void	(*selectfunc)(edict_t* ent, struct pnode* entry);
 } pmenunode;
 
-struct {
+typedef struct {
 	char*	name;
 	char*	gravity;
 	int	light;
 	qboolean	did;
 	qboolean	hook;
-} maplist[64];
+} maplist_t;
+
+extern maplist_t maplist[];
 
 enum team_enum {
 	red, blue, green, yellow, none };
 static char*	freeze_team[] = {"Red", "Blue", "Green", "Yellow", "None"};
-int	endMapIndex;
+extern int	endMapIndex;
 
 void gibThink(edict_t* ent);
 void pmenu_next(edict_t* ent);
