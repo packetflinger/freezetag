@@ -1,66 +1,152 @@
-#
-# Quake2 gamei386.so Makefile for Linux 2.0
-#
-# Jan '98 by Zoid <zoid@idsoftware.com>
-#
-# Jan 2010 by QwazyWabbit <wabbit@clawos.org> 
-# Modified for Linux Red Hat 4.x and GNU Make 3.81
-# Do 'make depend' to build new dependencies file based on sources.
-#
-# ELF only
-#
-# Probably requires GNU make
-#
+-include .config
 
-# Jan 2010 by quadz:
-# NOTE: added forced -m32 flags (i'm on x86_64 but want to build i386)
-#
+ifndef CPU
+	CPU := $(shell uname -m | sed -e s/i.86/i386/ -e s/amd64/x86_64/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/ -e s/alpha/axp/)
+endif
 
+ifndef REV
+	REV := $(shell git rev-list HEAD | wc -l | tr -d " ")
+endif
 
-ARCH=i386
-CC=gcc
-BASE_CFLAGS=-Dstricmp=strcasecmp -D__linux__ -DLINUX
+ifndef VER
+	VER := $(REV)~$(shell git rev-parse --short HEAD)
+endif
+ifndef YEAR
+	YEAR := $(shell date +%Y)
+endif
 
-#use these cflags to optimize it
-CFLAGS=$(BASE_CFLAGS) -DNDEBUG -m32 -O2 -g -ffast-math -funroll-loops -fomit-frame-pointer -fexpensive-optimizations -falign-loops=2 -falign-jumps=2 -falign-functions=2
-#use these when debugging 
-#CFLAGS=$(BASE_CFLAGS) -g
+CC ?= gcc
+LD ?= ld
+WINDRES ?= windres
+STRIP ?= strip
+RM ?= rm -f
 
-LDFLAGS=-ldl -lm
-SHLIBEXT=so
-SHLIBCFLAGS=-fPIC
-SHLIBLDFLAGS=-shared
-
-DO_CC=$(CC) $(CFLAGS) $(SHLIBCFLAGS) -o $@ -c $<
-
-#############################################################################
-# SETUP AND BUILD
-# GAME
-#############################################################################
-
-.c.o:
-	$(DO_CC)
-
-# This is where you put the mod's source files
-GAME_OBJS = freeze.o g_ai.o g_chase.o g_cmds.o g_combat.o g_func.o g_items.o g_main.o g_misc.o g_monster.o g_phys.o g_save.o g_spawn.o g_svcmds.o g_target.o g_trigger.o g_turret.o g_utils.o g_weapon.o gslog.o m_actor.o m_berserk.o m_boss2.o m_boss3.o m_boss31.o m_boss32.o m_brain.o m_chick.o m_flash.o m_flipper.o m_float.o m_flyer.o m_gladiator.o m_gunner.o m_hover.o m_infantry.o m_insane.o m_medic.o m_move.o m_mutant.o m_parasite.o m_soldier.o m_supertank.o m_tank.o p_client.o p_hud.o p_trail.o p_view.o p_weapon.o q_shared.o sl_packet.o stdlog.o
+CFLAGS += -O2 -fno-strict-aliasing -g -Wno-unused-but-set-variable -fPIC -MMD $(INCLUDES)
+LDFLAGS ?= -shared
+LIBS ?= -lm -ldl
 
 
-game$(ARCH).$(SHLIBEXT) : $(GAME_OBJS)
-	$(CC) $(CFLAGS) $(SHLIBLDFLAGS) -o $@ $(GAME_OBJS)
-	chmod 0755 $@
-	ldd -r $@
-#	cp $@ ..
+HEADERS := \
+	banner.h \
+	freeze.h \
+	game.h \
+	g_local.h \
+	gslog.h \
+	m_actor.h \
+	m_berserk.h \
+	m_boss2.h \
+	m_boss31.h \
+	m_boss32.h \
+	m_brain.h \
+	m_chick.h \
+	m_flipper.h \
+	m_float.h \
+	m_flyer.h \
+	m_gladiator.h \
+	m_gunner.h \
+	m_hover.h \
+	m_infantry.h \
+	m_insane.h \
+	m_medic.h \
+	m_mutant.h \
+	m_parasite.h \
+	m_player.h \
+	m_rider.h \
+	m_soldier.h \
+	m_supertank.h \
+	m_tank.h \
+	q_shared.h \
+	sl_packet.h \
+	stdlog.h
 
+OBJS := \
+	freeze.o \
+	g_ai.o \
+	g_chase.o \
+	g_cmds.o \
+	g_combat.o \
+	g_func.o \
+	g_items.o \
+	g_main.o \
+	g_misc.o \
+	g_monster.o \
+	g_phys.o \
+	g_save.o \
+	gslog.o \
+	g_spawn.o \
+	g_svcmds.o \
+	g_target.o \
+	g_trigger.o \
+	g_turret.o \
+	g_utils.o \
+	g_weapon.o \
+	m_actor.o \
+	m_berserk.o \
+	m_boss2.o \
+	m_boss31.o \
+	m_boss32.o \
+	m_boss3.o \
+	m_brain.o \
+	m_chick.o \
+	m_flash.o \
+	m_flipper.o \
+	m_float.o \
+	m_flyer.o \
+	m_gladiator.o \
+	m_gunner.o \
+	m_hover.o \
+	m_infantry.o \
+	m_insane.o \
+	m_medic.o \
+	m_move.o \
+	m_mutant.o \
+	m_parasite.o \
+	m_soldier.o \
+	m_supertank.o \
+	m_tank.o \
+	p_client.o \
+	p_hud.o \
+	p_trail.o \
+	p_view.o \
+	p_weapon.o \
+	q_shared.o \
+	sl_packet.o \
+	stdlog.o
 
-#############################################################################
-# MISC
-#############################################################################
+TARGET ?= game$(CPU)-freeze-r$(VER).so	
+
+all: $(TARGET)
+
+default: all
+
+# Define V=1 to show command line.
+ifdef V
+    Q :=
+    E := @true
+else
+    Q := @
+    E := @echo
+endif
+
+-include $(OBJS:.o=.d)
+
+%.o: %.c $(HEADERS)
+	$(E) [CC] $@
+	$(Q)$(CC) -c $(CFLAGS) -o $@ $<
+
+%.o: %.rc
+	$(E) [RC] $@
+	$(Q)$(WINDRES) $(RCFLAGS) -o $@ $<
+
+$(TARGET): $(OBJS)
+	$(E) [LD] $@
+	$(Q)$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 clean:
-	-rm -f $(GAME_OBJS)
-	-rm -f gamei386.so
+	$(E) [CLEAN]
+	$(Q)$(RM) *.o *.d $(TARGET)
 
-depend:
-	gcc -MM $(GAME_OBJS:.o=.c) > dependencies
-
--include dependencies
+strip: $(TARGET)
+	$(E) [STRIP]
+	$(Q)$(STRIP) $(TARGET)
+	
