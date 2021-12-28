@@ -25,6 +25,10 @@ _CrtMemState FirstMemCheckpoint;	// memory diagnostics
 #include "freeze.h"
 /*freeze*/
 
+#ifndef _WIN32
+#define stricmp strcasecmp
+#endif
+
 #ifndef _DEBUG
 #define BUILD	"Release"
 #else
