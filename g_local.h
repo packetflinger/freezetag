@@ -15,6 +15,7 @@ _CrtMemState FirstMemCheckpoint;	// memory diagnostics
 #endif
 
 #include <unistd.h>
+#include <ctype.h>
 #include "q_shared.h"
 
 // define GAME_INCLUDE so that game.h does not define the
