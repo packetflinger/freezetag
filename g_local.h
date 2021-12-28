@@ -14,6 +14,7 @@ _CrtMemState FirstMemCheckpoint;	// memory diagnostics
 #define OutputDebugString	//not doing Windows
 #endif
 
+#include <unistd.h>
 #include "q_shared.h"
 
 // define GAME_INCLUDE so that game.h does not define the
