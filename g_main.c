@@ -60,6 +60,7 @@ cvar_t	*flood_persecond;
 cvar_t	*flood_waitdelay;
 
 cvar_t	*sv_maplist;
+cvar_t  *sv_intermission_time;
 
 void SpawnEntities (char *mapname, char *entities, char *spawnpoint);
 void ClientThink (edict_t *ent, usercmd_t *cmd);

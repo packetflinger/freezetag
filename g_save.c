@@ -198,6 +198,9 @@ void InitGame (void)
 	// dm map list
 	sv_maplist = gi.cvar ("sv_maplist", "", 0);
 
+	// how many seconds intermission should last
+	sv_intermission_time = gi.cvar("sv_intermission_time", "10", 0);
+
 /*freeze*/
 	cvarFreeze();
 /*freeze*/

@@ -562,6 +562,7 @@ extern	cvar_t	*flood_persecond;
 extern	cvar_t	*flood_waitdelay;
 
 extern	cvar_t	*sv_maplist;
+extern  cvar_t  *sv_intermission_time;
 
 #define world	(&g_edicts[0])
 
