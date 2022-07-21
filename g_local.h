@@ -321,6 +321,8 @@ typedef struct
 
 	// intermission state
 	float		intermissiontime;		// time the intermission was started
+	int		intermissionframe;		// the frame number intermission started
+	int		intermissionexitframe;		// the frame the intermission is done
 	char		*changemap;
 	int			exitintermission;
 	vec3_t		intermission_origin;

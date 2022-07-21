@@ -312,6 +312,10 @@ void CheckDMRules (void)
 	int			i;
 	gclient_t	*cl;
 
+	if (level.intermissionframe > 0 && level.framenum >= level.intermissionexitframe) {
+	       level.exitintermission = 1;
+	}
+
 	if (level.intermissiontime)
 		return;
 
@@ -373,6 +377,8 @@ void ExitLevel (void)
 	level.changemap = NULL;
 	level.exitintermission = 0;
 	level.intermissiontime = 0;
+	level.intermissionframe = 0;
+	level.intermissionexitframe = 0;
 	ClientEndServerFrames ();
 
 	// clear some things before going to next level

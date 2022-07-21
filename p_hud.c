@@ -76,6 +76,8 @@ void BeginIntermission (edict_t *targ)
 	}
 freeze*/
 
+	level.intermissionframe = level.framenum;
+	level.intermissionexitframe = level.framenum + ((int)sv_intermission_time->value * 10);
 	level.intermissiontime = level.time;
 	level.changemap = targ->map;
 
